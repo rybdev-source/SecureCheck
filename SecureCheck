@@ -1,0 +1,186 @@
+import base64
+import urllib.parse
+import binascii
+import quopri
+import html
+import string
+
+# Morse code dictionary
+MORSE_CODE_DICT = {
+    '.-': 'A', '-...': 'B', '-.-.': 'C', '-..': 'D', '.': 'E',
+    '..-.': 'F', '--.': 'G', '....': 'H', '..': 'I', '.---': 'J',
+    '-.-': 'K', '.-..': 'L', '--': 'M', '-.': 'N', '---': 'O',
+    '.--.': 'P', '--.-': 'Q', '.-.': 'R', '...': 'S', '-': 'T',
+    '..-': 'U', '...-': 'V', '.--': 'W', '-..-': 'X', '-.--': 'Y',
+    '--..': 'Z', '-----': '0', '.----': '1', '..---': '2', '...--': '3',
+    '....-': '4', '.....': '5', '-....': '6', '--...': '7', '---..': '8',
+    '----.': '9', '/': ' '
+}
+
+def base64_decode(s):
+    try:
+        return base64.b64decode(s).decode('utf-8')
+    except Exception as e:
+        return f"Base64 decode error: {e}"
+
+def base32_decode(s):
+    try:
+        return base64.b32decode(s).decode('utf-8')
+    except Exception as e:
+        return f"Base32 decode error: {e}"
+
+def base85_decode(s):
+    try:
+        return base64.b85decode(s).decode('utf-8')
+    except Exception as e:
+        return f"Base85 decode error: {e}"
+
+def hex_decode(s):
+    try:
+        return bytes.fromhex(s).decode('utf-8')
+    except Exception as e:
+        return f"Hex decode error: {e}"
+
+def url_decode(s):
+    try:
+        return urllib.parse.unquote(s)
+    except Exception as e:
+        return f"URL decode error: {e}"
+
+def caesar_decrypt(s, shift):
+    decrypted = ""
+    for char in s:
+        if char.isalpha():
+            start = ord('A') if char.isupper() else ord('a')
+            decrypted += chr((ord(char) - start - shift) % 26 + start)
+        else:
+            decrypted += char
+    return decrypted
+
+def rot13_decode(s):
+    return caesar_decrypt(s, 13)
+
+def binary_decode(s):
+    try:
+        # Assume input is space separated binary.
+        binaries = s.split()
+        chars = [chr(int(b, 2)) for b in binaries]
+        return ''.join(chars)
+    except Exception as e:
+        return f"Binary decode error: {e}"
+
+def quopri_decode(s):
+    try:
+        return quopri.decodestring(s).decode('utf-8')
+    except Exception as e:
+        return f"Quoted-printable decode error: {e}"
+
+def html_entity_decode(s):
+    try:
+        return html.unescape(s)
+    except Exception as e:
+        return f"HTML entity decode error: {e}"
+
+def ascii85_decode(s):
+    try:
+        return base64.a85decode(s).decode('utf-8')
+    except Exception as e:
+        return f"ASCII85 decode error: {e}"
+
+def morse_decode(s):
+    try:
+        words = s.split('   ')  # Morse words separated by 3 spaces
+        decoded_words = []
+        for word in words:
+            chars = word.split()
+            decoded_word = ''.join(MORSE_CODE_DICT.get(ch, '') for ch in chars)
+            decoded_words.append(decoded_word)
+        return ' '.join(decoded_words)
+    except Exception as e:
+        return f"Morse decode error: {e}"
+
+def utf8_hex_decode(s):
+    try:
+        # Converts hex to bytes, then decode as utf-8, allow ignoring errors
+        return bytes.fromhex(s).decode('utf-8', errors='ignore')
+    except Exception as e:
+        return f"UTF-8 Hex decode error: {e}"
+
+def base16_decode(s):
+    try:
+        return base64.b16decode(s).decode('utf-8')
+    except Exception as e:
+        return f"Base16 decode error: {e}"
+
+def print_menu(): #Select from methods to decode.
+    print("Choose decoding method:")
+    print("1. Base64")
+    print("2. Base32")
+    print("3. Base85")
+    print("4. Base16 (Hex variant)")
+    print("5. Hexadecimal")
+    print("6. URL Decode")
+    print("7. Caesar Cipher")
+    print("8. ROT13")
+    print("9. Binary")
+    print("10. Quoted-Printable")
+    print("11. HTML Entity")
+    print("12. ASCII85")
+    print("13. Morse Code")
+    print("14. UTF-8 Hex")
+    print("15. Base16 (standard library)")
+    print("16. Exit")
+
+def main():
+    while True:
+        print_menu()
+        choice = input("Enter choice (1-16): ").strip()
+
+        if choice == '16':
+            print("Goodbye, Have a Good Day!")
+            break
+
+        encoded = input("Enter encoded string: ")
+
+        if choice == '1':
+            print("Decoded:", base64_decode(encoded))
+        elif choice == '2':
+            print("Decoded:", base32_decode(encoded))
+        elif choice == '3':
+            print("Decoded:", base85_decode(encoded))
+        elif choice == '4':
+            print("Decoded:", base16_decode(encoded))
+        elif choice == '5':
+            print("Decoded:", hex_decode(encoded))
+        elif choice == '6':
+            print("Decoded:", url_decode(encoded))
+        elif choice == '7':
+            try:
+                shift = int(input("Enter Caesar cipher shift (number): "))
+                print("Decoded:", caesar_decrypt(encoded, shift))
+            except ValueError:
+                print("Shift must be an integer!")
+        elif choice == '8':
+            print("Decoded:", rot13_decode(encoded))
+        elif choice == '9':
+            print("Decoded:", binary_decode(encoded))
+        elif choice == '10':
+            print("Decoded:", quopri_decode(encoded))
+        elif choice == '11':
+            print("Decoded:", html_entity_decode(encoded))
+        elif choice == '12':
+            print("Decoded:", ascii85_decode(encoded))
+        elif choice == '13':
+            print("Decoded:", morse_decode(encoded))
+        elif choice == '14':
+            print("Decoded:", utf8_hex_decode(encoded))
+        elif choice == '15':
+            print("Decoded:", base16_decode(encoded))
+        else:
+            print("Invalid choice, try again.")
+
+        print("-" * 40)
+
+if __name__ == "__main__":
+    main()
+
